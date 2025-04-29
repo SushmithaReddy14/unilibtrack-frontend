@@ -157,7 +157,7 @@
         localStorage.setItem('username', user.name)
         if (user.user_type === 'Student') {
           window.location.href = 'student_dashboard.html';
-        } else if (data["user"]["user_type"] === 'Staff') {
+        } else if (user.user_type === 'Staff') {
           window.location.href = 'staff_dashboard.html';
         } 
         

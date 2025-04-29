@@ -150,7 +150,7 @@
                   <tr>
                     <td><strong>${reservation.book_name}</strong></td>
                     <td>${formatDate(reservation.reservation_date)}</td>
-                    <td style="color: ${reservation.status === 'Active' ? 'green' : reservation.status === 'Issued' ? 'orange' : reservation.status === 'Cancelled' ? 'red' : 'black'};">${reservation.status}</td>
+                    <td style="color: ${reservation.status === 'Active' ? 'green' : reservation.status === 'Issued' ? 'blue' : reservation.status === 'Cancelled' ? 'red' : 'black'};">${reservation.status}</td>
                   </tr>
                 `).join('')}
               </tbody>
