@@ -18,11 +18,16 @@
     </div>
   </div>
 
+  <script src="js/db_config.js"></script>
+
   <script>
+   
     async function login() {
+      baseUrl = config.API_URL;
+      console.log("base url: ", baseUrl);
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      const res = await fetch('https://unilibtrack-backend.onrender.com/login', {
+      const res = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

@@ -40,8 +40,11 @@
     </div> -->
   </div>
 
+  <script src="js/db_config.js"></script>
+
   <script>
-    const apiBase = 'http://localhost:5000/';
+  
+    const baseUrl = config.API_URL;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('staff-name').textContent = localStorage.getItem('username');
@@ -61,7 +64,7 @@
       // To implement: Replace with actual endpoint that fetches student reservations
       document.getElementById('reservations-list').innerHTML = '<p>Reservation list will go here.</p>';
 
-      const res = await fetch(`${apiBase}/reservations/get_all_reservations`, {
+      const res = await fetch(`${baseUrl}/reservations/get_all_reservations`, {
         method: "GET",
         credentials: "include"
       });
@@ -125,7 +128,7 @@
     }
 
     async function fetchBooks() {
-      const res = await fetch(`${apiBase}/books`);
+      const res = await fetch(`${baseUrl}/books`);
       const books = await res.json();
       const container = document.getElementById('books-list');
       container.innerHTML = books.map(book => `
@@ -140,7 +143,7 @@
 
     async function issueBook(bookId, userId) {
 
-      const res = await fetch(`${apiBase}/loans/add_loan`, {
+      const res = await fetch(`${baseUrl}/loans/add_loan`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -153,7 +156,7 @@
 
     async function returnBook(bookId, userId) {
   
-      const res = await fetch(`${apiBase}/loans/return_book`, {
+      const res = await fetch(`${baseUrl}/loans/return_book`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -171,7 +174,7 @@
         alert("Please enter both Book ID and User ID.");
         return;
       }
-      const res = await fetch(`${apiBase}/reservations`, {
+      const res = await fetch(`${baseUrl}/reservations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -183,7 +186,7 @@
     }
 
     function logout() {
-      fetch(`${apiBase}/logout`, {
+      fetch(`${baseUrl}/logout`, {
         method: 'POST',
         credentials: 'include'
       }).then(() => {

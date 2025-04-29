@@ -31,8 +31,10 @@
     <div id="reservations-list"></div>
   </div>
 
+  <script src="js/db_config.js"></script>
+
   <script>
-    const apiBase = 'http://localhost:5000';
+    baseUrl = config.API_URL;
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('student-name').textContent = localStorage.getItem('username');
@@ -42,7 +44,7 @@
     });
 
     async function fetchBooks() {
-      const res = await fetch(`${apiBase}/books/get_books`, {
+      const res = await fetch(`${baseUrl}/books/get_books`, {
         method: "GET",
         credentials: "include"
       });
@@ -58,7 +60,7 @@
     }
 
     async function issueBook(bookId) {
-      const res = await fetch(`${apiBase}/loans/add_book`, {
+      const res = await fetch(`${baseUrl}/loans/add_book`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -81,7 +83,7 @@
       // To implement: Replace with actual endpoint that fetches student loans
       document.getElementById('loans-list').innerHTML = '<p>Loan history will go here.</p>';
 
-      const res = await fetch(`${apiBase}/loans/get_loans`, {
+      const res = await fetch(`${baseUrl}/loans/get_loans`, {
         method: "GET",
         credentials: "include"
       });
@@ -127,7 +129,7 @@
       // To implement: Replace with actual endpoint that fetches student reservations
       document.getElementById('reservations-list').innerHTML = '<p>Reservation list will go here.</p>';
 
-      const res = await fetch(`${apiBase}/reservations/get_user_reservations`, {
+      const res = await fetch(`${baseUrl}/reservations/get_user_reservations`, {
         method: "GET",
         credentials: "include"
       });
@@ -172,7 +174,7 @@
 
     async function reserveBook(bookId, bookName) {
       console.log("Request Body:", { book_id: bookId, book_name: bookName });
-      const res = await fetch(`${apiBase}/reservations/reserve_book`, {
+      const res = await fetch(`${baseUrl}/reservations/reserve_book`, {
         method: 'POST',
         credentials: "include",
         headers: { 'Content-Type': 'application/json' },
@@ -185,7 +187,7 @@
 
     async function cancelReservation(bookId) {
       console.log("Request Body:", { book_id: bookId });
-      const res = await fetch(`${apiBase}/reservations/cancel_reserv`, {
+      const res = await fetch(`${baseUrl}/reservations/cancel_reserv`, {
         method: 'POST',
         credentials: "include",
         headers: { 'Content-Type': 'application/json' },
@@ -197,7 +199,7 @@
     }
 
     function logout() {
-      fetch(`${apiBase}/logout`, {
+      fetch(`${baseUrl}/logout`, {
         method: 'POST',
         credentials: 'include'
       }).then(() => {

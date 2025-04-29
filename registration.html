@@ -64,10 +64,13 @@
     </form>
   </div>
 
+  <script src="js/db_config.js"></script>
+
   <script>
     document.getElementById('registrationForm').addEventListener('submit', async (e) => {
 
-      
+      baseUrl = config.API_URL;
+
       e.preventDefault();
       
       // Clear previous errors
@@ -130,7 +133,7 @@
       
       // API Integration
       try {
-        const response = await fetch('https://unilibtrack-backend.onrender.com/register', {
+        const response = await fetch(`${baseUrl}/register`, {
           method: 'POST',
           credentials: 'include',
           headers: {
