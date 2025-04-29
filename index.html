@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniLib Track - Login</title>
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div class="container">
+    <h1>UniLib Track</h1>
+    <div id="login-form">
+      <input type="text" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <p id="login-message"></p>
+      <p class="signup-prompt">Don't have an account? <a href="registration.html">Sign Up</a></p>
+    </div>
+  </div>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('https://unilibtrack-backend.onrender.com/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+     
+        if (res.ok) {
+        localStorage.setItem('email', email);
+        localStorage.setItem('user_id', data["user"]["user_id"])
+        localStorage.setItem('username', data["user"]["name"])
+        if (data["user"]["user_type"] === 'Student') {
+          window.location.href = 'student_dashboard.html';
+        } else if (data["user"]["user_type"] === 'Staff') {
+          window.location.href = 'staff_dashboard.html';
+        } 
+        
+      } else {
+        document.getElementById('login-message').textContent = data.message;
+      }
+    }
+  </script>
+</body>
+</html>

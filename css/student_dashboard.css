@@ -1,0 +1,119 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #eef2f5;
+}
+  
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+  
+.container {
+  max-width: 900px;
+  margin: 30px auto;
+  background: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+#books-list, #loans-list, #reservations-list {
+  margin-bottom: 30px;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.book {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: box-shadow 0.2s;
+}
+
+.book:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.book p {
+  margin: 8px 0;
+}
+
+.book button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.book button:hover {
+  background: #1565c0;
+}
+
+.loan-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-family: 'Segoe UI', sans-serif;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+.loan-table th {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.loan-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.loan-table tr:hover td {
+  background-color: #f1f3f5;
+}
+
+.loan-table tr:last-child td {
+  border-bottom: none;
+}
+
+button {
+  margin-right: 10px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.action {
+  text-align: right;
+}

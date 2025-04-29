@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Dashboard - UniLib Track</title>
+  <link rel="stylesheet" href="css/staff_dashboard.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header-row">
+      <h2>Welcome,<span id="staff-name"></span></h2>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    
+
+    <h3>Book Reservations</h3>
+    <div id="reservations-list"></div>
+
+
+    <!-- <h3>Books Inventory</h3>
+    <div id="books-list"></div> -->
+
+    <!-- <h3>Return Book</h3>
+    <div class="book">
+      <input type="number" id="return-book-id" placeholder="Book ID">
+      <input type="number" id="return-user-id" placeholder="User ID">
+      <button onclick="returnBook()">Return Book</button>
+    </div>
+
+    <h3>Reserve Book</h3>
+    <div class="book">
+      <input type="number" id="reserve-book-id" placeholder="Book ID">
+      <input type="number" id="reserve-user-id" placeholder="User ID">
+      <button onclick="reserveBook()">Reserve</button>
+    </div> -->
+  </div>
+
+  <script>
+    const apiBase = 'http://localhost:5000/';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('staff-name').textContent = localStorage.getItem('username');
+      // fetchBooks();
+      fetchReservations();
+    });
+
+     // Helper function to format date strings to "Apr 26, 2025" format
+     function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+
+
+    async function fetchReservations() {
+      // To implement: Replace with actual endpoint that fetches student reservations
+      document.getElementById('reservations-list').innerHTML = '<p>Reservation list will go here.</p>';
+
+      const res = await fetch(`${apiBase}/reservations/get_all_reservations`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const reservations = await res.json();
+      const container = document.getElementById('reservations-list');
+
+      // Table implementation
+      container.innerHTML = `
+            <table class="reservations-table">
+              <thead>
+                <tr>
+                  <th>Book</th>
+                  <th>Reservation Date</th>
+                  <th>User</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${reservations.map(reservation => `
+                  <tr>
+                    <td><strong>${reservation.book_name}</strong></td>
+                    <td>${formatDate(reservation.reservation_date)}</td>
+                    <td><strong>${reservation.username}</strong></td>
+                    <td class="action">
+                      ${reservation.status === "Active"
+                        ? `<button 
+                            class="action-button issue-button"
+                            onclick="issueBook(${reservation.book_id}, ${reservation.user_id})"
+                          >
+                            Issue Book
+                          </button>`
+                        : reservation.status === "Issued"
+                          ? `<button 
+                              class="action-button return-button"
+                              onclick="returnBook(${reservation.book_id}, ${reservation.user_id})"
+                            >
+                              Return Book
+                            </button>`
+                          : '<span class="text-muted">No action</span>'
+                      }
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+      `;
+
+      // container.innerHTML = reservations.map(reservation => `
+      //  <div class="reservation" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 5px 0;"> 
+      //     <p style="margin: 0; flex: 1;"><strong>${reservation.book_name}</strong> on ${reservation.reservation_date} by <strong>${reservation.username}</strong></p> 
+      //     <div class="action">
+      //       ${reservation.status === "Active"
+      //     ? `<button onclick="issueBook(${reservation.book_id}, ${reservation.user_id})">Issue Book</button>`
+      //     : reservation.status === "Issued"
+      //       ? `<button onclick="returnBook(${reservation.book_id}, ${reservation.user_id})">Return Book</button>`
+      //       : ''
+      //   }
+      //     </div>
+      //  </div>
+      // `).join('');
+    }
+
+    async function fetchBooks() {
+      const res = await fetch(`${apiBase}/books`);
+      const books = await res.json();
+      const container = document.getElementById('books-list');
+      container.innerHTML = books.map(book => `
+        <div class="book">
+          <p><strong>${book.title}</strong> by ${book.author}</p>
+          <p>Status: ${book.available_copies > 0 ? 'Available' : 'Not Available'}</p>
+          <input type="number" id="student-${book.book_id}" placeholder="Student ID">
+          <button onclick="issueBook(${book.book_id})">Issue</button>
+        </div>
+      `).join('');
+    }
+
+    async function issueBook(bookId, userId) {
+
+      const res = await fetch(`${apiBase}/loans/add_loan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ book_id: bookId, user_id: userId })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchReservations();
+    }
+
+    async function returnBook(bookId, userId) {
+  
+      const res = await fetch(`${apiBase}/loans/return_book`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ book_id: bookId, user_id: userId })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchReservations();
+    }
+
+    async function reserveBook() {
+      const bookId = document.getElementById('reserve-book-id').value;
+      const userId = document.getElementById('reserve-user-id').value;
+      if (!bookId || !userId) {
+        alert("Please enter both Book ID and User ID.");
+        return;
+      }
+      const res = await fetch(`${apiBase}/reservations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ book_id: bookId, user_id: userId })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchBooks();
+    }
+
+    function logout() {
+      fetch(`${apiBase}/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+
+</html>

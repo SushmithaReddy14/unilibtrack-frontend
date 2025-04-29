@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - UniLib Track</title>
+  <link rel="stylesheet" href="css/student_dashboard.css">
+</head>
+
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h2>Welcome, <span id="student-name"></span></h2>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+    <hr>
+
+    <h3>Available Books</h3>
+    <div id="books-list" class="books-grid"></div>
+
+    <hr>
+
+    <h3>Your Current Loans</h3>
+    <div id="loans-list" ></div>
+
+    <hr>
+
+    <h3>Your Reservations</h3>
+    <div id="reservations-list"></div>
+  </div>
+
+  <script>
+    const apiBase = 'http://localhost:5000';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('student-name').textContent = localStorage.getItem('username');
+      fetchBooks();
+      fetchLoans();
+      fetchReservations();
+    });
+
+    async function fetchBooks() {
+      const res = await fetch(`${apiBase}/books/get_books`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const books = await res.json();
+      const container = document.getElementById('books-list');
+      container.innerHTML = books.map(book => `
+        <div class="book">
+          <p><strong>${book.title}</strong> by ${book.author}</p>
+          <p>Available: ${book.available_copies}</p>
+          <button onclick="reserveBook(${book.book_id}, '${book.title}')">Reserve</button>
+        </div>
+      `).join('');
+    }
+
+    async function issueBook(bookId) {
+      const res = await fetch(`${apiBase}/loans/add_book`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ book_id: bookId })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchBooks();
+      fetchLoans();
+    }
+
+    // Helper function to format date strings to "Apr 26, 2025" format
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+
+    async function fetchLoans() {
+      // To implement: Replace with actual endpoint that fetches student loans
+      document.getElementById('loans-list').innerHTML = '<p>Loan history will go here.</p>';
+
+      const res = await fetch(`${apiBase}/loans/get_loans`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const loans = await res.json();
+      const container = document.getElementById('loans-list');
+      console.log(loans);
+
+      container.innerHTML = `
+            <table class="loan-table">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Issue Date</th>
+                  <th>Due Date</th>
+                  <th>Return Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${loans.map(loan => `
+                  <tr>
+                    <td><strong>${loan.book_title}</strong></td>
+                    <td>${formatDate(loan.issue_date)}</td>
+                    <td>${formatDate(loan.due_date)}</td>
+                    <td>${loan.return_date ? formatDate(loan.return_date) : "Not Yet"}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            `;
+
+      // container.innerHTML = loans.map(loan => `
+      //  <div class="reservation"> 
+      //     <p><strong>${loan.book_title}</strong> on ${loan.issue_date}, ${loan.due_date}</p> 
+      //       ${loan.status === "Cancelled" 
+      //           ? '<span class="cancelled action">Cancelled</span>' 
+      //           : `<button  class="action" onclick="cancelReservation(${loan.book_id})">Cancel</button>`}
+          
+      //  </div>
+      // `).join('');
+    }
+
+    async function fetchReservations() {
+      // To implement: Replace with actual endpoint that fetches student reservations
+      document.getElementById('reservations-list').innerHTML = '<p>Reservation list will go here.</p>';
+
+      const res = await fetch(`${apiBase}/reservations/get_user_reservations`, {
+        method: "GET",
+        credentials: "include"
+      });
+      const reservations = await res.json();
+      const container = document.getElementById('reservations-list');
+
+      container.innerHTML = `
+            <table class="loan-table">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Reserved Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${reservations.map(reservation => `
+                  <tr>
+                    <td><strong>${reservation.book_name}</strong></td>
+                    <td>${formatDate(reservation.reservation_date)}</td>
+                    <td style="color: ${reservation.status === 'Active' ? 'green' : reservation.status === 'Issued' ? 'orange' : reservation.status === 'Cancelled' ? 'red' : 'black'};">${reservation.status}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            `;
+
+      // container.innerHTML = reservations.map(reservation => `
+      //  <div class="reservation" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 5px 0;"> 
+      //     <p style="margin: 0; flex: 1;"><strong>${reservation.book_name}</strong> on ${reservation.reservation_date}</p> 
+      //       ${reservation.status === "Cancelled" 
+      //           ? '<span style="color: red;" class="cancelled action">Cancelled</span>' 
+      //           : reservation.status === "Issued"
+      //           ? '<span style="color: green;" class="issued action" >Issued</span>'
+      //           : reservation.status === "Fullfilled"
+      //           ? '<span class="fullfilled action" >Fullfilled</span>'
+      //           : `<button  class="action" onclick="cancelReservation(${reservation.book_id})">Cancel</button>`}
+          
+      //   </div>
+      // `).join('');
+    }
+
+    async function reserveBook(bookId, bookName) {
+      console.log("Request Body:", { book_id: bookId, book_name: bookName });
+      const res = await fetch(`${apiBase}/reservations/reserve_book`, {
+        method: 'POST',
+        credentials: "include",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId, book_name: bookName })
+      });
+      const data = await res.json();
+      fetchReservations();
+      alert(data.message);
+    }
+
+    async function cancelReservation(bookId) {
+      console.log("Request Body:", { book_id: bookId });
+      const res = await fetch(`${apiBase}/reservations/cancel_reserv`, {
+        method: 'POST',
+        credentials: "include",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book_id: bookId })
+      });
+      const data = await res.json();
+      alert(data.message);
+      fetchReservations();
+    }
+
+    function logout() {
+      fetch(`${apiBase}/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+
+</html>
